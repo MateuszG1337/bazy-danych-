@@ -1,0 +1,87 @@
+create table `pracownicy` (
+id_pracownika INT auto_increment PRIMARY KEY,
+ imie varchar(40) NOT NULL,
+ naziwsko varchar(60) NOT NULL,
+ data_urodzenia DATE NOT NULL
+ );
+ insert into pracownicy (imie, naziwsko, data_urodzenia) values
+('jan', 'kowalski', '1990-05-12'),
+('mateusz', 'gwiazda', '2000-05-12'),
+('kris', 'szczur', '1990-02-11');
+update pracownicy
+set data_urodzenia = '1990-05-14'
+where id_pracownika =1;
+create table zadanie (
+id_zadania INT auto_increment PRIMARY KEY,
+nazwa_zadania VARCHAR(150) NOT NULL,
+priorytet ENUM('normalny','wysoki','niski'),
+opis TEXT,
+pracownik INT,
+constraint fk_pracownik
+foreign key (pracownik)
+references pracownicy(id_pracownika)
+on delete set null
+);
+alter table zadanie
+alter column priorytet SET DEFAULT 'normalny';
+insert into zadanie (nazwa_zadania, priorytet, opis, pracownik) values
+('konfiguracja bazy danych','wysoki','przygotowanie struktury tabeli',1),
+('analiza bazy danych','niski','analiza struktury tabeli',2),
+('testy systemowa','wysoki','sprawdzanie poprawnosci dzialania',3);
+create table projekt (
+id_projektu INT auto_increment PRIMARY KEY,
+nazwa_projektu VARCHAR(150) NOT NULL,
+data_rozpoczecia DATE NOT NULL,
+data_zakonczenia DATE NOT NULL
+);
+ALTER TABLE projekt
+add column menadzer_projektu INT,
+add constraint fk_menadzer
+foreign key (menadzer_projektu)
+references pracownicy(id_pracownika);
+insert into projekt (nazwa_projektu, data_rozpoczecia, data_zakonczenia, menadzer_projektu) values
+('system windows','2026-01-10','2026-02-10',1),
+('aplikacja','2026-03-10','2026-04-10',2);
+alter table zadanie
+add column projekt int,
+add constraint fk_zadanie_projekt
+foreign key (projekt)
+references projekt(id_projektu)
+on delete cascade;
+update zadanie set projekt = 1 where id_zadania in (1,2);
+update zadanie set projekt = 2 where id_zadania = 3;
+create table sprint (
+id_sprint int auto_increment primary key,
+numer_sprintu int unsigned not null,
+data_rozpoczecia date not null,
+data_zakonczenia date not null
+);
+create table status (
+id_statusu int auto_increment primary key,
+nazwa_statusu varchar(20) not null
+);
+insert into status (nazwa_statusu) values
+('nowe'),
+('w toku'),
+('zakonczone');
+create table zadanie_has_status (
+id_zdarzenia int auto_increment primary key,
+oid_zadania int not null,
+oid_statusu int not null,
+data_zdarzenia datetime default current_timestamp,
+constraint fk_zhs_zadanie
+foreign key (oid_zadania)
+references zadanie(id_zadania)
+on delete cascade,
+constraint fk_zhs_status
+foreign key (oid_statusu)
+references status(id_statusu)
+on delete cascade
+);
+insert into zadanie_has_status (oid_zadania, oid_statusu) values
+(1, 1),
+(2, 2),
+(3, 3);
+delete from projekt where id_projektu = 2;
+select * from zadanie
+drop table if exists sprint;
