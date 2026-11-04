@@ -1,0 +1,41 @@
+alter table zadanie drop foreign key fk_pracownik;
+alter table pracownikprojekt drop foreign key fk_zadanie_projekt_pracownik;
+alter table menadzer_projekt drop foreign key fk_menadzer_projektu_pracownik;
+alter table pracownicy drop primary key;
+alter table pracownicy add primary key (id_pracownika);
+alter table zadanie
+add constraint fk_zadanie_pracownik
+foreign key (id_pracownika) references pracownicy (id_pracownika);
+alter table pracownikprojekt
+add constraint fk_pracownik_projekt_pracownik
+foreign key (id_pracownika) references pracownik (id_pracownika);
+alter table menadzer_projektu
+add constraint fk_menadzer_projektu_pracownik
+foreign key (id_pracownika)  references pracownik (id_pracownika);
+alter table zadanie
+add column godziny_szacowane int default 8;
+update zadanie set godziny_szacowane = 4 where id_zadania = 1;
+update zadanie set godziny_szacowane = 12 where id_zadania = 2;
+update zadanie set godziny_szacowane = 16 where id_zadania = 3;
+alter table zadanie
+alter column godziny_szacowane set default 6;
+insert into zadanie (id_zadania, nazwa_zadania, priorytet, opis, pracownik, projekt)
+values (999, 'testowe zadanie', 'wysoki','blablabla', 1, 1)
+select * from zadanie where id_zadania = 999;
+delete from zadanie where id_zadania = 999;
+alter table projekt
+add column opis_projektu varchar(50) null;
+alter table projekt
+modify column opis_projektu varchar (200) null;
+update projekt set opis_projektu = 'mvp' where id_projektu = 1;
+update projekt set opis_projektu = 'pilne wdrozenie' where id_projektu =2;
+alter table projekt
+drop column opis_projektu;
+alter table zadanie drop foreign key fk_zadanie_projekt;
+alter table zadanie 
+add constraint fk_zadanie_projekt
+foreign key (projekt) references projekt(id_projektu)
+on delete set null;
+delete from projekt where id_projektu = 1;
+select * from zadanie;
+
